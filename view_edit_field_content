@@ -1,0 +1,50 @@
+<div id="messageboxWarn">
+<section style="z-index: 10000;" role="dialog" id="sr-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="false" >
+            <header class="aui-dialog2-header">
+                <h2 style="color: #FF0000;" class="aui-dialog2-header-main">Предупреждение</h2>
+
+                <a class="aui-dialog2-header-close">
+                    <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+                </a>
+
+            </header>
+            <div class="aui-dialog2-content">
+                <p>Для задачи уже было создано ответное исходящее письмо. Вы уверены что хотите создать еще одно ответное письмо ?</p>
+            </div>
+            <footer class="aui-dialog2-footer">
+
+        <!-- Actions to render on the right of the footer -->
+        <div class="aui-dialog2-footer-actions">
+            <button id="closeMsgYes" class="aui-button aui-button-primary">Да</button>
+            <button id="closeMsgNo" class="aui-button aui-button-primary">Нет</button>
+        </div>
+
+
+
+                <!-- <div class="aui-dialog2-footer-hint">Some hint here if you like</div> -->
+            </footer>
+        </section>
+</div>
+
+<script>
+
+AJS.$("body").prepend( AJS.$("#messageboxWarn") );
+AJS.$(".jira-dialog-heading").parent().css("display", "none");
+
+AJS.$("#closeMsgYes").click(function() {
+ 
+ AJS.$("#messageboxWarn").remove();
+ AJS.$(".jira-dialog-heading").parent().css("display", "block");
+
+});
+
+AJS.$("#closeMsgNo").click(function() {
+ 
+ //location.reload();
+ AJS.$(".jira-dialog-heading").parent().remove();
+ AJS.$(".aui-blanket").remove();
+ AJS.$("#messageboxWarn").remove();
+});
+
+
+</script>
