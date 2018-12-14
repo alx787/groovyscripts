@@ -1,0 +1,25 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+//def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def linkedIssues = ComponentAccessor.getIssueLinkManager().getLinkCollection(issue, currentUser).getAllIssues()
+
+
+int cntLinkTask = 0
+
+String issueT = ""
+
+if (linkedIssues.size() > 0){
+  for (int i = 0; i < linkedIssues.size(); i++){
+//    if (!linkedIssues[i].getIssueType().isSubTask()){
+    // считаем только письмо исходящее
+    if (linkedIssues[i].getIssueTypeId() == "10105"){
+      cntLinkTask = cntLinkTask + 1
+    }
+  }
+}
+
+if (cntLinkTask > 0) {
+  true
+} else {
+  false
+}
