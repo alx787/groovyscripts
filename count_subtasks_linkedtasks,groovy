@@ -1,8 +1,11 @@
 import com.atlassian.jira.component.ComponentAccessor
+шьзщке com.atlassian.jira.issue.Issue
 
 //def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
 def linkedIssues = ComponentAccessor.getIssueLinkManager().getLinkCollection(issue, currentUser).getAllIssues()
 
+// получить субтаски
+Collection<Issue> subtasks = issue.getSubTaskObjects();
 
 int cntLinkTask = 0
 
