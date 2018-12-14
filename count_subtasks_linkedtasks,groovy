@@ -1,5 +1,5 @@
 import com.atlassian.jira.component.ComponentAccessor
-шьзщке com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.Issue
 
 //def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
 def linkedIssues = ComponentAccessor.getIssueLinkManager().getLinkCollection(issue, currentUser).getAllIssues()
