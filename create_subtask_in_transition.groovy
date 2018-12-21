@@ -4,18 +4,27 @@ import com.atlassian.jira.issue.MutableIssue
 import com.atlassian.jira.user.ApplicationUser
 import com.atlassian.jira.issue.IssueFactory
 import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.attachment.FileAttachments
 import org.slf4j.LoggerFactory
 
-import com.onresolve.scriptrunner.runner.util.UserMessageUtil
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.event.type.*
+//import com.onresolve.scriptrunner.runner.util.UserMessageUtil
 
 def log = LoggerFactory.getLogger(this.getClass()) 
 
 IssueFactory issueFactory = ComponentAccessor.getIssueFactory()
 IssueManager issueManager = ComponentAccessor.getIssueManager()
 
-def customFieldManager = ComponentAccessor.getCustomFieldManager()
+CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
 def subTaskManager = ComponentAccessor.getSubTaskManager()
-def ispCstFld = customFieldManager.getCustomFieldObject(10500L)
+def attachmentManager = ComponentAccessor.getAttachmentManager()
+def pathManager = ComponentAccessor.getAttachmentPathManager()
+
+// исполнители
+//def ispCstFld = customFieldManager.getCustomFieldObject(10500L)
+def ispCstFld = customFieldManager.getCustomFieldObject(10301L)
 
 //originalIssue
 //if (issue.getIssueTypeObject().getName() != "Поручение") {
@@ -47,13 +56,30 @@ if (ispolniteli.size() == 0) {
 //  }
 //}
 
+//String st = ""
+
+//log.warn(" ================= before ")
+
+
+// копируем поле из родительской задачи в подзадачи
+// срок исполнения - кастомное поле, это системное
+//def customFieldDate = customFieldManager.getCustomFieldObject(10019L); 
+// получаем значение
+//Object customFieldDateValue = issue.getCustomFieldValue(customFieldDate); 
+//def customFieldDateValue = issue.getCustomFieldValue(customFieldDate); 
+
 
 ispolniteli.each { oneUser ->
   
+
+  //log.warn(" ================= step ")
+  
   
   MutableIssue newSubTask = issueFactory.getIssue()
-  // поручение - тип задачи
+  // поручение
   newSubTask.setIssueTypeId("10109")
+  
+  
   
   newSubTask.setAssignee(oneUser)
   
@@ -65,15 +91,41 @@ ispolniteli.each { oneUser ->
   newSubTask.setParentObject(issue)
   newSubTask.setProjectObject(issue.getProjectObject())
   newSubTask.setPriority(issue.getPriority())
-  
+
+  newSubTask.setDueDate(issue.getDueDate())
+
   Map<String,Object> newIssueParams = ["issue" : newSubTask] as Map<String,Object>
   Issue newIssue = issueManager.createIssueObject(curUser, newIssueParams)
   subTaskManager.createSubTaskIssueLink(issue, newSubTask, curUser)
 
   
-//  log.warn("создана подзадача " + newIssue.getKey() + " исполнитель " + oneUser.getDisplayName())
+  // присвоим значение кастомного поля
+//  newIssue.setCustomFieldValue(customFieldDate, customFieldDateValue);
+//  issueManager.updateIssue(curUser, newIssue, EventDispatchOption.ISSUE_UPDATED, false)  
+  
+  
+  attachmentManager.getAttachments(issue).each {attachment ->
+	// копируем вложения из родительской задачи в подзадачу    
+	//log.debug("key : "+ attachment.getId())
+    
+	File rootDir = new File(pathManager.attachmentPath)
+	File filePath = FileAttachments.getAttachmentDirectoryForIssue(rootDir, issue.projectObject.getKey(), issue.getKey())
+	String filePaths = filePath.toString()
+	filePaths = filePaths + "//" + attachment.getId()
+	File atFile = new File(filePaths)  
 
-  UserMessageUtil.warning("создана подзадача " + newIssue.getKey() + " исполнитель " + oneUser.getDisplayName())
-
+	//log.debug("file path : " + filePaths)
+    
+    if (atFile.exists()) {
+		attachmentManager.createAttachmentCopySourceFile(atFile, attachment.filename, attachment.mimetype, attachment.author, newIssue, [:], attachment.created)
+    }
+  }
+  
+  
+  
+  //  log.warn(oneUser.getDisplayName())
+  //UserMessageUtil.warning("создана подзадача " + newIssue.getKey() + " исполнитель " + oneUser.getDisplayName())
+  //  UserMessageUtil.warning("создана подзадача исполнитель " + oneUser.getDisplayName())
+  
   
 }
