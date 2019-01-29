@@ -17,4 +17,5 @@ ApplicationUser curUser = ComponentAccessor.getJiraAuthenticationContext().getLo
 
 issue.setSecurityLevelId(10001)
 
-issueManager.updateIssue(curUser, issue, EventDispatchOption.ISSUE_UPDATED, false);
+//issueManager.updateIssue(curUser, issue, EventDispatchOption.ISSUE_UPDATED, false);
+issue.store()
