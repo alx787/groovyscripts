@@ -86,6 +86,13 @@ def copyPrevAssigneToFIONabludateley(Issue issue) {
 
             issueManager.updateIssue(curUser, issue, EventDispatchOption.DO_NOT_DISPATCH, false);
         }
+        
+        // всех кто есть в списке добавляем в наблюдатели
+        for (ApplicationUser oneUser : fioNablVal) {
+            watcherManager.startWatching(oneUser, issue)
+        }
+        
+        
     }
 
 }
