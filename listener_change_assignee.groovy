@@ -26,6 +26,7 @@ import com.atlassian.jira.issue.CustomFieldManager
 
 import com.atlassian.jira.event.type.EventDispatchOption
 import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.watchers.WatcherManager
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,7 +36,8 @@ def copyPrevAssigneToFIONabludateley(Issue issue) {
 
     IssueManager issueManager = ComponentAccessor.getIssueManager()
     UserManager userManager = ComponentAccessor.getUserManager();
-
+    WatcherManager watcherManager = ComponentAccessor.getWatcherManager()
+    
     //////////////////////////////////////
     // текущий пользователь
     ApplicationUser curUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
