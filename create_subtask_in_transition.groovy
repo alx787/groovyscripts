@@ -12,12 +12,16 @@ import com.atlassian.jira.issue.fields.CustomField
 import com.atlassian.jira.event.type.*
 //import com.onresolve.scriptrunner.runner.util.UserMessageUtil
 
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.watchers.WatcherManager
+  
 def log = LoggerFactory.getLogger(this.getClass()) 
 
 IssueFactory issueFactory = ComponentAccessor.getIssueFactory()
 IssueManager issueManager = ComponentAccessor.getIssueManager()
 
 CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
+WatcherManager watcherManager = ComponentAccessor.getWatcherManager()
 def subTaskManager = ComponentAccessor.getSubTaskManager()
 def attachmentManager = ComponentAccessor.getAttachmentManager()
 def pathManager = ComponentAccessor.getAttachmentPathManager()
@@ -62,12 +66,28 @@ if (ispolniteli.size() == 0) {
 
 
 // копируем поле из родительской задачи в подзадачи
-// срок исполнения - кастомное поле, это системное
-//def customFieldDate = customFieldManager.getCustomFieldObject(10019L); 
+// СРОК ИСПОЛНЕНИЯ - кастомное поле в родительской задаче, копируем его в системное поле срок исполнения подзадачи
+CustomField customFieldDate = customFieldManager.getCustomFieldObject(10019L); 
 // получаем значение
-//Object customFieldDateValue = issue.getCustomFieldValue(customFieldDate); 
+Object customFieldDateValue = issue.getCustomFieldValue(customFieldDate); 
 //def customFieldDateValue = issue.getCustomFieldValue(customFieldDate); 
 
+
+// поле фио наблюдателей
+CustomField customFieldFIOnabl = customFieldManager.getCustomFieldObject(10400L); 
+
+// содержимое поля ФИО наблюдателей
+List<ApplicationUser> fioNabl = new ArrayList<ApplicationUser>(ispolniteli)
+fioNabl.add(issue.getAssignee())
+
+// присвоим поле ФИО наблюдателей для родительской задачи
+issue.setCustomFieldValue(customFieldFIOnabl, ispolniteli);
+issueManager.updateIssue(curUser, issue, EventDispatchOption.ISSUE_UPDATED, false)  
+
+// добавим всех в наблюдатели
+for (ApplicationUser taskUser : fioNabl) {
+	watcherManager.startWatching(taskUser, issue)  
+}
 
 ispolniteli.each { oneUser ->
   
@@ -91,21 +111,32 @@ ispolniteli.each { oneUser ->
   newSubTask.setParentObject(issue)
   newSubTask.setProjectObject(issue.getProjectObject())
   newSubTask.setPriority(issue.getPriority())
+  
+  // приватный уровень безопасности
+  newSubTask.setSecurityLevelId(10001L)
+  
+  // присваиваем поле срок исполнения
+  //newSubTask.setDueDate(issue.getDueDate())
+  newSubTask.setDueDate(customFieldDateValue)
 
-  newSubTask.setDueDate(issue.getDueDate())
-
+  
   Map<String,Object> newIssueParams = ["issue" : newSubTask] as Map<String,Object>
   Issue newIssue = issueManager.createIssueObject(curUser, newIssueParams)
   subTaskManager.createSubTaskIssueLink(issue, newSubTask, curUser)
 
   
   // присвоим значение кастомного поля
-//  newIssue.setCustomFieldValue(customFieldDate, customFieldDateValue);
-//  issueManager.updateIssue(curUser, newIssue, EventDispatchOption.ISSUE_UPDATED, false)  
+  newIssue.setCustomFieldValue(customFieldFIOnabl, fioNabl);
+  issueManager.updateIssue(curUser, newIssue, EventDispatchOption.ISSUE_UPDATED, false)  
   
+
+  // добавим всех в наблюдатели
+  for (ApplicationUser subtaskUser : fioNabl) {
+    watcherManager.startWatching(subtaskUser, newIssue)  
+  }  
   
   attachmentManager.getAttachments(issue).each {attachment ->
-	// копируем вложения из родительской задачи в подзадачу    
+    
 	//log.debug("key : "+ attachment.getId())
     
 	File rootDir = new File(pathManager.attachmentPath)
@@ -123,9 +154,12 @@ ispolniteli.each { oneUser ->
   
   
   
-  //  log.warn(oneUser.getDisplayName())
+//  log.warn(oneUser.getDisplayName())
+
+
   //UserMessageUtil.warning("создана подзадача " + newIssue.getKey() + " исполнитель " + oneUser.getDisplayName())
-  //  UserMessageUtil.warning("создана подзадача исполнитель " + oneUser.getDisplayName())
+
+//  UserMessageUtil.warning("создана подзадача исполнитель " + oneUser.getDisplayName())
   
   
 }
