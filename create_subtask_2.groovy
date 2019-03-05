@@ -45,6 +45,8 @@ import com.atlassian.jira.issue.attachment.Attachment
 
 import com.atlassian.jira.config.SubTaskManager
 
+import com.onresolve.scriptrunner.runner.util.UserMessageUtil
+
 ///////////
 // удалить
 ///////////
@@ -74,6 +76,16 @@ if (ispolniteli == null) {
 if (ispolniteli.size() == 0) {
     return
 }
+
+// тут тоже небольшая проверочка надо ли создавать подзадачи
+// если подзадачи уже есть то ничего не создаем
+Collection<Issue> subtasks = issue.getSubTaskObjects()
+if (subtasks.size() > 0) {
+    UserMessageUtil.error("Subtasks not created")
+    return
+}
+
+
 
 // создаем подзадачи - по количеству пользователей в поле ИСПОЛНИТЕЛИ (переменная ApplicationUser)
 for (ApplicationUser oneUser : ispolniteli) {
@@ -181,4 +193,9 @@ for (ApplicationUser oneUser : ispolniteli) {
 
 
     }
+
+//    UserMessageUtil.success("Создана подзадача для " + oneUser.getDisplayName())
+    UserMessageUtil.success("Create subtask " + newIssue.getKey().toString()  + " for " + oneUser.getDisplayName())
+
+
 }
