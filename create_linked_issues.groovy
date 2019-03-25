@@ -4,7 +4,7 @@
 //
 //
 //
-// переход НА РЕЗОЛЮЦИИ -> НА ИСПОЛНЕНИИ
+// переход НА ИСПОЛНЕНИИ -> ПОДГОТОВКА ОТВЕТА
 //
 //
 // все делаем по сценарию боба свифта
@@ -41,56 +41,169 @@ import com.atlassian.jira.issue.CustomFieldManager
 import com.atlassian.jira.issue.fields.CustomField
 
 import com.atlassian.jira.bc.issue.IssueService
+import com.atlassian.jira.bc.issue.IssueService.IssueResult
+import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult
 import com.atlassian.jira.issue.IssueInputParameters
+
+import com.atlassian.jira.issue.fields.config.FieldConfig
+import com.atlassian.jira.issue.customfields.option.Options
+import com.atlassian.jira.issue.customfields.option.Option
+
+
+
+
+def getValueFromStringField(long fieldId) {
+    CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
+    CustomField managerCf = customFieldManager.getCustomFieldObject(fieldId)
+    String valueCf = (String)issue.getCustomFieldValue(managerCf)
+
+    if ((valueCf == null) || (valueCf.isEmpty())) {
+        valueCf = "_";
+    }
+
+    return valueCf
+}
+
+
+
+
+
+
+
+
 
 
 CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
 IssueService issueService = ComponentAccessor.getIssueService()
 
 
+
+//log.warn("field config")
+//log.warn(sposobOtprPossibleVal.toString())
+//
+//
+//for (Option oneOpt : sposobOtprPossibleVal) {
+//    log.warn("id " + String.valueOf(oneOpt.optionId) + " value " + oneOpt.value)
+//}
+
+
+
+
+
 // id поля исполнители 10301
 CustomField ispolnCf = customFieldManager.getCustomFieldObject(10301L)
-List<ApplicationUser> ispolnVal = issue.getCustomFieldValue(ispolnCf)
+List<ApplicationUser> ispolnVal = (List<ApplicationUser>)issue.getCustomFieldValue(ispolnCf)
 
 log.warn(" ==================== begin step")
 
 log.warn(ispolnVal.toString())
 
 
-//Issue issue;
+//Issue issue
 
 if (ispolnVal == null) {
     log.warn(" ==================== task not create")
     return
 }
 
-
+// текущий пользователь
 ApplicationUser curUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
 MutableIssue mutableIssue
 
 
 for (ApplicationUser oneUser : ispolnVal) {
 
-    IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-    issueInputParameters
-            .setProjectId(issue.getProjectId())
-            .setSummary(issue.getSummary())
-            .setDescription(issue.getDescription())
-            .setIssueTypeId("10105")
-            .setPriorityId(issue.getPriority().getId())
-//            .setReporterId(issue.getReporterId())
-            .setReporterId(String.valueOf(curUser.getId()))
-            .setAssigneeId(String.valueOf(oneUser.getId()))
+    IssueInputParameters issueInputParameters = issueService.newIssueInputParameters()
+
+    issueInputParameters.setSkipScreenCheck(true)
+//    issueInputParameters.setSkipLicenceCheck(true)
+
+    issueInputParameters.setProjectId(issue.getProjectId())
+    issueInputParameters.setIssueTypeId("10105")
+    issueInputParameters.setStatusId("1")
+
+    issueInputParameters.setSummary(issue.getSummary())
+    issueInputParameters.setDescription(issue.getDescription())
+    issueInputParameters.setPriorityId(issue.getPriority().getId())
+    issueInputParameters.setReporterId(issue.getReporterId())
+    issueInputParameters.setAssigneeId(issue.getAssigneeId())
 
 
-    ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+    //////////////////////////////////////////////////
+    // Адрес организации
+    issueInputParameters.addCustomFieldValue(10060L, getValueFromStringField(10060L))
 
-    IssueService.CreateValidationResult createValidationResult = issueService.validateCreate(user, issueInputParameters)
+
+    //////////////////////////////////////////////////
+    // Должность подписанта
+//    issueInputParameters.addCustomFieldValue(10600L, )
+
+
+    //////////////////////////////////////////////////
+    // ФИО руководителя
+    issueInputParameters.addCustomFieldValue(10071L, getValueFromStringField(10071L))
+
+    //////////////////////////////////////////////////
+    // Организация
+    issueInputParameters.addCustomFieldValue(10061L, getValueFromStringField(10061L))
+
+    //////////////////////////////////////////////////
+    // должность руководителя
+    issueInputParameters.addCustomFieldValue(10072L, getValueFromStringField(10072L))
+
+    //////////////////////////////////////////////////
+    // подписант
+    CustomField podpisantCf = customFieldManager.getCustomFieldObject(10031L)
+    ApplicationUser podpisantVal = (ApplicationUser)issue.getCustomFieldValue(podpisantCf)
+
+    if (podpisantVal == null) {
+        podpisantVal = curUser
+    }
+
+    issueInputParameters.addCustomFieldValue(10031L, podpisantVal.getName())
+
+    //////////////////////////////////////////////////
+    // способ отправки
+    // 10020 способ отправки
+    CustomField sposobOtprCf = customFieldManager.getCustomFieldObject(10020L)
+    FieldConfig sposobOtprConfig = sposobOtprCf.getRelevantConfig(issue)
+    // все возможные способы отправки
+    Options sposobOtprPossibleVal = ComponentAccessor.getOptionsManager().getOptions(sposobOtprConfig)
+
+    issueInputParameters.addCustomFieldValue(10020L, sposobOtprPossibleVal.getOptionById(10004L).optionId.toString());
+
+    //////////////////////////////////////////////////
+    // делопроизводитель
+    issueInputParameters.addCustomFieldValue(10032L, curUser.getName())
+
+    //////////////////////////////////////////////////
+    // телефон автора
+    issueInputParameters.addCustomFieldValue(10033L, getValueFromStringField(10033L))
+
+
+    //////////////////////////////////////////////////
+    // индекс
+    issueInputParameters.addCustomFieldValue(10069L, getValueFromStringField(10069L))
+
+//    issueInputParameters.addCustomFieldValue(10037L, )
+
+
+
+//            .setReporterId(String.valueOf(curUser.getId()))
+//            .setAssigneeId(String.valueOf(oneUser.getId()))
+
+
+//    ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+
+
+
+
+    CreateValidationResult createValidationResult = issueService.validateCreate(curUser, issueInputParameters)
 
     if (createValidationResult.isValid())
     {
         log.error("entrou no createValidationResult")
-        IssueService.IssueResult createResult = issueService.create(user, createValidationResult)
+        IssueResult createResult = issueService.create(curUser, createValidationResult)
         if (!createResult.isValid())
         {
             log.error("Error while creating the issue.")
@@ -102,6 +215,14 @@ for (ApplicationUser oneUser : ispolnVal) {
         }
     } else {
         log.warn(" ==================== create result is not valid  ")
+
+        Map<String, String> errorCollection = createValidationResult.getErrorCollection().getErrors()
+        log.warn("ERROR: Validation errors:")
+        for (String errorKey : errorCollection.keySet()) {
+            log.warn(errorKey);
+            log.warn(errorCollection.get(errorKey));
+        }
+
     }
 }
 
