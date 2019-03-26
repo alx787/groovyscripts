@@ -49,8 +49,8 @@ import com.atlassian.jira.issue.fields.config.FieldConfig
 import com.atlassian.jira.issue.customfields.option.Options
 import com.atlassian.jira.issue.customfields.option.Option
 
-
-
+//import com.atlassian.jira.issue.customfields.view.CustomFieldParams
+//import com.atlassian.jira.issue.customfields.impl.CalculatedCFType
 
 def getValueFromStringField(long fieldId) {
     CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
@@ -123,7 +123,10 @@ for (ApplicationUser oneUser : ispolnVal) {
     issueInputParameters.setStatusId("1")
 
     issueInputParameters.setSummary(issue.getSummary())
-    issueInputParameters.setDescription(issue.getDescription())
+
+//    issueInputParameters.setDescription(issue.getDescription())
+    issueInputParameters.setDescription("121212")
+
     issueInputParameters.setPriorityId(issue.getPriority().getId())
     issueInputParameters.setReporterId(issue.getReporterId())
     issueInputParameters.setAssigneeId(issue.getAssigneeId())
@@ -136,7 +139,29 @@ for (ApplicationUser oneUser : ispolnVal) {
 
     //////////////////////////////////////////////////
     // Должность подписанта
-//    issueInputParameters.addCustomFieldValue(10600L, )
+
+//    def valPart_0 = issue.getCustomFieldValue(dolgnField)[0].toString()
+//    def valPart_1 = issue.getCustomFieldValue(dolgnField)[1].toString()
+//    def valPart_2 = issue.getCustomFieldValue(dolgnField)[2].toString()
+
+    CustomField dolgnField = customFieldManager.getCustomFieldObject(10600L)
+    FieldConfig dolgnConfig = dolgnField.getRelevantConfig(issue)
+    List<Option> dolgnFieldOptions = ComponentAccessor.getOptionsManager().getOptions(dolgnConfig)
+
+
+    // перебор всех опций
+//    for (Option oneOpt : dolgnFieldOptions) {
+//        log.warn(" = oneOpt: " + oneOpt)
+//
+//        List<Option> dolgnFieldOptions_2 = oneOpt.getChildOptions()
+//        for (Option secondOpt : dolgnFieldOptions_2) {
+//            log.warn(" == secOpt: " + secondOpt)
+//        }
+//
+//    }
+
+//    issueInputParameters.addCustomFieldValue(10600L, dolgnFieldOptions.getOptionById(11500L).optionId.toString())
+    issueInputParameters.addCustomFieldValue(dolgnField.getId() + ":0", dolgnFieldOptions.getOptionById(11500L).optionId.toString())
 
 
     //////////////////////////////////////////////////
@@ -185,7 +210,32 @@ for (ApplicationUser oneUser : ispolnVal) {
     // индекс
     issueInputParameters.addCustomFieldValue(10069L, getValueFromStringField(10069L))
 
-//    issueInputParameters.addCustomFieldValue(10037L, )
+
+    //////////////////////////////////////////////////
+    // Подпись - подпись логином паролем, хз зачем
+
+//    CustomField signCf = customFieldManager.getCustomFieldObject(10037L)
+//    Object signVal = issue.getCustomFieldValue(signCf)
+//
+//    log.warn(" sign field ")
+//    if (signVal == null) {
+//        log.warn("null")
+//    } else {
+//        log.warn(signVal)
+//    }
+
+
+//    issueInputParameters.addCustomFieldValue(10037L, null)
+//    issueInputParameters.addCustomFieldValue("10037", curUser.getName(), "passw")
+
+
+    String[] myValues = ["username","userpass", "opts"]
+
+    log.warn("opts")
+    log.warn(myValues)
+
+    issueInputParameters.addCustomFieldValue(10037L, myValues)
+//    issueInputParameters.addCustomFieldValue("10037:1", "password")
 
 
 
