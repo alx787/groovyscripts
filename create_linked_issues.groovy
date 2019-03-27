@@ -214,7 +214,7 @@ for (ApplicationUser oneUser : ispolnVal) {
     //////////////////////////////////////////////////
     // Подпись - подпись логином паролем, хз зачем
 
-//    CustomField signCf = customFieldManager.getCustomFieldObject(10037L)
+    CustomField signCf = customFieldManager.getCustomFieldObject(10037L)
 //    Object signVal = issue.getCustomFieldValue(signCf)
 //
 //    log.warn(" sign field ")
@@ -229,15 +229,16 @@ for (ApplicationUser oneUser : ispolnVal) {
 //    issueInputParameters.addCustomFieldValue("10037", curUser.getName(), "passw")
 
 
-    String[] myValues = ["username","userpass", "opts"]
+//    String[] myValues = ["username","userpass", "opts"]
 
     log.warn("opts")
-    log.warn(myValues)
+//    log.warn(myValues)
+//    issueInputParameters.addCustomFieldValue(signCf.getId(), "useralex")
+//    issueInputParameters.addCustomFieldValue(signCf.getId() + ":1", "password")
+    issueInputParameters.addCustomFieldValue(signCf.getId(), curUser.getName())
+    issueInputParameters.addCustomFieldValue(signCf.getId() + ":1", "pizdetskakoyto")
 
-    issueInputParameters.addCustomFieldValue(10037L, myValues)
-//    issueInputParameters.addCustomFieldValue("10037:1", "password")
-
-
+    
 
 //            .setReporterId(String.valueOf(curUser.getId()))
 //            .setAssigneeId(String.valueOf(oneUser.getId()))
