@@ -1,0 +1,195 @@
+jdbc:h2:file:/home/alex/devel/groupbosses/target/jira/home/database/h2db
+
+
+Просмотр свойств этапа бизнес-процесса: На отправке
+На этой странице показаны свойства заданные для На отправке этапа бизнес-процесса. Вы можете использовать эту страницу для добавления новых свойств или удаления существующих.
+
+Свойство состоит из пары ключ/значение и используется при расширенном функционале Jira .
+Произвольные свойства могут быть заданы для возможности дальнешей настройки в процессе перехода между этапами бизнес-процесса.
+Посмотреть этапы бизнес-процесса из Doc - output v.2 (Черновик).
+Ключ свойства	Значение свойства	Операции
+
+
+jira.permission.edit.group              jira-administrators	Удалить
+jira.permission.attachdeleteown.group	jira-administrators	Удалить
+jira.permission.attachdeleteall.group	jira-administrators	Удалить
+jira.permission.attach.group            jira-administrators	Удалить
+
+
+issue.get("Номенклатура дела")?.keySet()?.size() == 2
+
+
+
+id	entity_name	entity_id	property_key	propertytype
+11115	jira.properties	1	intenso.cfr.settings.json	6
+
+
+
+alexhost:/opt/atlassian/jira/atlassian-jira/WEB-INF/classes/templates/jira/issue/field # ls -l summary-columnview.vm
+
+-rw-r--r-- 1 jira root 1131 авг 27  2018 summary-columnview.vm
+
+alexhost:/opt/atlassian/jira/atlassian-jira/WEB-INF/classes/templates/jira/issue/field # pwd
+/opt/atlassian/jira/atlassian-jira/WEB-INF/classes/templates/jira/issue/field
+alexhost:/opt/atlassian/jira/atlassian-jira/WEB-INF/classes/templates/jira/issue/field # 
+
+
+
+#disable_html_escaping()
+#set ($nolink = ($displayParams && $displayParams.get('nolink')))
+<p>
+#if ($nolink)
+    #if ($subTask && $parentIssueKey)
+        <span class="parentIssue">$parentIssueKey</span>
+    #end
+    #if (${displayParams.excel_view})
+        $textutils.htmlEncode($summary, false)
+    #else
+        $textutils.htmlEncode($summary)
+    #end
+#else
+    #if ($subTask && $parentIssueKey)
+        #if ($subTaskParentIssueLinkDisabled && $subTaskParentIssueLinkDisabled == true)
+            <span class="parentIssue">$parentIssueKey</span>
+        #else
+            <a class="issue-link parentIssue" data-issue-key="$parentIssueKey" href="${requestContext.baseUrl}/browse/$parentIssueKey" title="$textutils.htmlEncode($parentIssueSum
+        #end
+    #end
+    #if (${displayParams.excel_view})
+        <a href="${requestContext.baseUrl}/browse/${issue.getKey()}">$textutils.htmlEncode($summary, false)</a>
+    #else
+        <a class="issue-link" data-issue-key="${issue.getKey()}" href="${requestContext.baseUrl}/browse/${issue.getKey()}">$textutils.htmlEncode($summary)</a>
+    #end
+#end
+</p>
+
+
+2019-03-04 10:47:04,100 http-nio-8080-exec-6 ERROR lvpor 647x318657x1 3d4pvg 10.43.6.86,127.0.0.1 /secure/CommentAssignIssue.jspa [c.o.scriptrunner.runner.AbstractScriptListener] Script
+ function failed on event: com.atlassian.jira.event.issue.IssueEvent, file: listeners/reassigned.groovy
+org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object '[lvpor(lvpor), oakarp(oakarp), msgit(msgit), uvfil(uvfil)]' with class 'java.util.HashSet' to class 'java.util.List' due to: groovy.lang.GroovyRuntimeException: Could not find matching constructor for: java.util.List(com.atlassian.jira.user.DelegatingApplicationUser, com.atlassian.jira.user.DelegatingApplicationUser, com.atlassian.jira.user.DelegatingApplicationUser, com.atlassian.jira.user.DelegatingApplicationUser)
+        at reassigned.copyPrevAssigneToFIONabludateley(reassigned.groovy:96)
+        at reassigned$copyPrevAssigneToFIONabludateley.callCurrent(Unknown Source)
+        at reassigned.run(reassigned.groovy:154)
+
+        
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.atlassian.jira.permission;
+
+import com.atlassian.jira.security.plugin.ProjectPermissionKey;
+import org.apache.commons.lang3.StringUtils;
+
+public class ProjectPermissions {
+    public static final ProjectPermissionKey ADMINISTER_PROJECTS = new ProjectPermissionKey("ADMINISTER_PROJECTS");
+    public static final ProjectPermissionKey BROWSE_PROJECTS = new ProjectPermissionKey("BROWSE_PROJECTS");
+    public static final ProjectPermissionKey VIEW_DEV_TOOLS = new ProjectPermissionKey("VIEW_DEV_TOOLS");
+    public static final ProjectPermissionKey VIEW_READONLY_WORKFLOW = new ProjectPermissionKey("VIEW_READONLY_WORKFLOW");
+    public static final ProjectPermissionKey CREATE_ISSUES = new ProjectPermissionKey("CREATE_ISSUES");
+    public static final ProjectPermissionKey EDIT_ISSUES = new ProjectPermissionKey("EDIT_ISSUES");
+    public static final ProjectPermissionKey TRANSITION_ISSUES = new ProjectPermissionKey("TRANSITION_ISSUES");
+    public static final ProjectPermissionKey SCHEDULE_ISSUES = new ProjectPermissionKey("SCHEDULE_ISSUES");
+    public static final ProjectPermissionKey MOVE_ISSUES = new ProjectPermissionKey("MOVE_ISSUES");
+    public static final ProjectPermissionKey ASSIGN_ISSUES = new ProjectPermissionKey("ASSIGN_ISSUES");
+    public static final ProjectPermissionKey ASSIGNABLE_USER = new ProjectPermissionKey("ASSIGNABLE_USER");
+    public static final ProjectPermissionKey RESOLVE_ISSUES = new ProjectPermissionKey("RESOLVE_ISSUES");
+    public static final ProjectPermissionKey CLOSE_ISSUES = new ProjectPermissionKey("CLOSE_ISSUES");
+    public static final ProjectPermissionKey MODIFY_REPORTER = new ProjectPermissionKey("MODIFY_REPORTER");
+    public static final ProjectPermissionKey DELETE_ISSUES = new ProjectPermissionKey("DELETE_ISSUES");
+    public static final ProjectPermissionKey LINK_ISSUES = new ProjectPermissionKey("LINK_ISSUES");
+    public static final ProjectPermissionKey SET_ISSUE_SECURITY = new ProjectPermissionKey("SET_ISSUE_SECURITY");
+    public static final ProjectPermissionKey VIEW_VOTERS_AND_WATCHERS = new ProjectPermissionKey("VIEW_VOTERS_AND_WATCHERS");
+    public static final ProjectPermissionKey MANAGE_WATCHERS = new ProjectPermissionKey("MANAGE_WATCHERS");
+    public static final ProjectPermissionKey ADD_COMMENTS = new ProjectPermissionKey("ADD_COMMENTS");
+    public static final ProjectPermissionKey EDIT_ALL_COMMENTS = new ProjectPermissionKey("EDIT_ALL_COMMENTS");
+    public static final ProjectPermissionKey EDIT_OWN_COMMENTS = new ProjectPermissionKey("EDIT_OWN_COMMENTS");
+    public static final ProjectPermissionKey DELETE_ALL_COMMENTS = new ProjectPermissionKey("DELETE_ALL_COMMENTS");
+    public static final ProjectPermissionKey DELETE_OWN_COMMENTS = new ProjectPermissionKey("DELETE_OWN_COMMENTS");
+    public static final ProjectPermissionKey CREATE_ATTACHMENTS = new ProjectPermissionKey("CREATE_ATTACHMENTS");
+    public static final ProjectPermissionKey DELETE_ALL_ATTACHMENTS = new ProjectPermissionKey("DELETE_ALL_ATTACHMENTS");
+    public static final ProjectPermissionKey DELETE_OWN_ATTACHMENTS = new ProjectPermissionKey("DELETE_OWN_ATTACHMENTS");
+    public static final ProjectPermissionKey WORK_ON_ISSUES = new ProjectPermissionKey("WORK_ON_ISSUES");
+    public static final ProjectPermissionKey EDIT_OWN_WORKLOGS = new ProjectPermissionKey("EDIT_OWN_WORKLOGS");
+    public static final ProjectPermissionKey EDIT_ALL_WORKLOGS = new ProjectPermissionKey("EDIT_ALL_WORKLOGS");
+    public static final ProjectPermissionKey DELETE_OWN_WORKLOGS = new ProjectPermissionKey("DELETE_OWN_WORKLOGS");
+    public static final ProjectPermissionKey DELETE_ALL_WORKLOGS = new ProjectPermissionKey("DELETE_ALL_WORKLOGS");
+
+    public ProjectPermissions() {
+    }
+
+    public static ProjectPermissionKey systemProjectPermissionKeyByShortName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        } else {
+            name = name.toLowerCase();
+            if (name.startsWith("project")) {
+                return ADMINISTER_PROJECTS;
+            } else if (name.startsWith("browse")) {
+                return BROWSE_PROJECTS;
+            } else if (name.startsWith("viewversioncontrol")) {
+                return VIEW_DEV_TOOLS;
+            } else if (name.startsWith("viewworkflowreadonly")) {
+                return VIEW_READONLY_WORKFLOW;
+            } else if (name.startsWith("create")) {
+                return CREATE_ISSUES;
+            } else if (name.startsWith("edit")) {
+                return EDIT_ISSUES;
+            } else if (name.startsWith("transition")) {
+                return TRANSITION_ISSUES;
+            } else if (name.startsWith("scheduleissue")) {
+                return SCHEDULE_ISSUES;
+            } else if (name.startsWith("move")) {
+                return MOVE_ISSUES;
+            } else if (name.startsWith("assignable")) {
+                return ASSIGNABLE_USER;
+            } else if (name.startsWith("assign")) {
+                return ASSIGN_ISSUES;
+            } else if (name.startsWith("resolve")) {
+                return RESOLVE_ISSUES;
+            } else if (name.startsWith("close")) {
+                return CLOSE_ISSUES;
+            } else if (name.startsWith("modifyreporter")) {
+                return MODIFY_REPORTER;
+            } else if (name.startsWith("delete")) {
+                return DELETE_ISSUES;
+            } else if (name.startsWith("link")) {
+                return LINK_ISSUES;
+            } else if (name.startsWith("setsecurity")) {
+                return SET_ISSUE_SECURITY;
+            } else if (name.startsWith("viewvotersandwatchers")) {
+                return VIEW_VOTERS_AND_WATCHERS;
+            } else if (name.startsWith("managewatcherlist")) {
+                return MANAGE_WATCHERS;
+            } else if (name.startsWith("commenteditall")) {
+                return EDIT_ALL_COMMENTS;
+            } else if (name.startsWith("commenteditown")) {
+                return EDIT_OWN_COMMENTS;
+            } else if (name.startsWith("commentdeleteall")) {
+                return DELETE_ALL_COMMENTS;
+            } else if (name.startsWith("commentdeleteown")) {
+                return DELETE_OWN_COMMENTS;
+            } else if (name.startsWith("comment")) {
+                return ADD_COMMENTS;
+            } else if (name.startsWith("attachdeleteall")) {
+                return DELETE_ALL_ATTACHMENTS;
+            } else if (name.startsWith("attachdeleteown")) {
+                return DELETE_OWN_ATTACHMENTS;
+            } else if (name.startsWith("attach")) {
+                return CREATE_ATTACHMENTS;
+            } else if (name.startsWith("worklogeditown")) {
+                return EDIT_OWN_WORKLOGS;
+            } else if (name.startsWith("worklogeditall")) {
+                return EDIT_ALL_WORKLOGS;
+            } else if (name.startsWith("worklogdeleteown")) {
+                return DELETE_OWN_WORKLOGS;
+            } else if (name.startsWith("worklogdeleteall")) {
+                return DELETE_ALL_WORKLOGS;
+            } else {
+                return name.startsWith("work") ? WORK_ON_ISSUES : null;
+            }
+        }
+    }
+}
+        
