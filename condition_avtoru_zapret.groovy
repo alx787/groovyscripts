@@ -17,3 +17,4 @@ if (curUser.equals(rukVSP)) {
 } else {
     passesCondition = false
 }
+
