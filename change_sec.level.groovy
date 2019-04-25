@@ -19,3 +19,4 @@ issue.setSecurityLevelId(10001)
 
 //issueManager.updateIssue(curUser, issue, EventDispatchOption.ISSUE_UPDATED, false);
 issue.store()
+
