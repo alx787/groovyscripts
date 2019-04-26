@@ -109,3 +109,4 @@ if (issue.getIssueTypeId().equals("10109")) {
 //    log.warn(" ============== do for subtask ============== ")
     copyPrevAssigneToFIONabludateley(issue)
 }
+
