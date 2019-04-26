@@ -180,3 +180,4 @@ for (ApplicationUser oneUser : roleUsers) {
   sendEmail(oneUser.getEmailAddress(), "задача ожидает исполнения", renderedText)
 
 }
+
