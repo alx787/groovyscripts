@@ -27,3 +27,4 @@ if (issue.getIssueType().name == "Task") {
  log.debug("The transitionValidation is not valid")
  }
 }
+
